@@ -3,9 +3,10 @@ import User from '../app/models/User'; // Importação do Model User
 import File from '../app/models/File'; // Importação do Model File
 import Meetup from '../app/models/Meetup'; // Importação do Model Meetup
 import databaseConfig from '../config/database'; // Importação das configurações
+import Registration from '../app/models/Registration';
 // do banco de dados.
 
-const models = [User, File, Meetup];
+const models = [User, File, Meetup, Registration];
 
 /**
  * Classe Database.

@@ -1,21 +1,45 @@
 import * as Yup from 'yup'; // importa todas as funções da extensão Yup
-import { startOfHour, isBefore, parseISO } from 'date-fns';
+import { Op } from 'sequelize';
+import {
+  startOfHour,
+  isBefore,
+  parseISO,
+  startOfDay,
+  endOfDay,
+} from 'date-fns';
 import Meetup from '../models/Meetup';
 import File from '../models/File';
+import User from '../models/User';
 
 class MeetupController {
   async index(req, res) {
+    const where = {};
+    const page = req.query.page || 1;
+
+    if (req.query.date) {
+      const searchDate = parseISO(req.query.date);
+
+      where.date = {
+        [Op.between]: [startOfDay(searchDate), endOfDay(searchDate)],
+      };
+    }
+
     const meetups = await Meetup.findAll({
-      where: {
-        user_id: req.userId,
-      },
+      where,
       order: ['date'],
       attributes: ['title', 'description', 'localization', 'date', 'banner'],
+      limit: 10,
+      offset: (page - 1) * 10,
       include: [
         {
           model: File,
           as: 'file_banner',
           attributes: ['id', 'path', 'url'],
+        },
+        {
+          model: User,
+          as: 'user',
+          attributes: ['id', 'name'],
         },
       ],
     });

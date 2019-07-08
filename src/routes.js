@@ -6,6 +6,8 @@ import multerConfig from './config/multer';
 import UserController from './app/controllers/UserController';
 import SessionController from './app/controllers/SessionController';
 import MeetupController from './app/controllers/MeetupController';
+import RegistrationController from './app/controllers/RegistrationController';
+import OrganizingController from './app/controllers/OrganizingController';
 import FileController from './app/controllers/FileController';
 
 /* Importação do Middleware responsável por fazer a autenticação */
@@ -53,6 +55,21 @@ routes.put('/meetups/:id', MeetupController.update);
  * Rota reponsável por deletar um Meetups.
  */
 routes.delete('/meetups/:id', MeetupController.delete);
+
+/**
+ * Rota reponsável por lista as Registration.
+ */
+routes.get('/organizing', OrganizingController.index);
+
+/**
+ * Rota reponsável por lista as Registration.
+ */
+routes.get('/registrations', RegistrationController.index);
+
+/**
+ * Rota reponsável por criar um Registration.
+ */
+routes.post('/meetups/:id/registrations', RegistrationController.store);
 
 /**
  * Rota reponsável por criar um file.
