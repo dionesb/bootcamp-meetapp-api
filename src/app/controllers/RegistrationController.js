@@ -1,10 +1,10 @@
 import { Op } from 'sequelize';
-import { isBefore, format } from 'date-fns';
-import pt from 'date-fns/locale/pt';
+import { isBefore } from 'date-fns';
 import Registration from '../models/Registration';
 import Meetup from '../models/Meetup';
-import Mail from '../../lib/Mail';
 import User from '../models/User';
+import Queue from '../../lib/Queue';
+import RegistrationMail from '../jobs/RegistrationMail';
 
 class RegistrationController {
   async index(req, res) {
@@ -89,19 +89,24 @@ class RegistrationController {
       meetup_id: req.params.id,
     });
 
-    await Mail.sendMail({
-      to: `${meetup.user.name} <${meetup.user.email}>`,
-      subject: 'Nova inscrição',
-      template: 'registration',
-      context: {
-        manager: meetup.user.name,
-        meetup: meetup.title,
-        user: user.name,
-        date: format(new Date(), "'dia' dd 'de' MMMM', às' H:mm'h'", {
-          locale: pt,
-        }),
-      },
+    await Queue.add(RegistrationMail.key, {
+      meetup,
+      user,
     });
+
+    // await Mail.sendMail({
+    //   to: `${meetup.user.name} <${meetup.user.email}>`,
+    //   subject: 'Nova inscrição',
+    //   template: 'registration',
+    //   context: {
+    //     manager: meetup.user.name,
+    //     meetup: meetup.title,
+    //     user: user.name,
+    //     date: format(new Date(), "'dia' dd 'de' MMMM', às' H:mm'h'", {
+    //       locale: pt,
+    //     }),
+    //   },
+    // });
 
     return res.json(registration);
   }
